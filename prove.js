@@ -73,10 +73,10 @@ function factory(is) {
   /**
    * @private
    */
-  function parameterize(f, argv) {
+  function parameterize(argv, f) {
     var output = {};
 
-    if (is.array(argv)) {
+    if (is.function(f)) {
       var m = PARAMETER_LIST_RE.exec(f);
       var keys = [];
 
@@ -90,6 +90,31 @@ function factory(is) {
     }
 
     return output;
+  }
+
+  /**
+   * @private
+   */
+  function produce(argv, predicate, okay, message) {
+    if (!okay) {
+      if (is.nil(message)) {
+        var parameters = parameterize(argv, predicate);
+        var s = ('' + predicate).replace(COLLAPSE_SPACE_RE, ' ');
+        var m = RETURN_RE.exec(s);
+        var infix = (m ? m[1] || m[2] : s);
+
+        var x = 0;
+        for (var name in parameters) {
+          var re = new RegExp('\\b' + name + '\\b', 'g');
+          infix = infix.replace(re, '\${' + x + '}');
+          x++;
+        }
+
+        message = 'Assertion failed. { ' + format(infix, argv) + ' }';
+      }
+
+      throw new Error(message);
+    }
   }
 
   /**
@@ -164,43 +189,31 @@ function factory(is) {
     }
 
     var message;
-    var okay = false;
-    var parameters = {};
+    var result = predicate;
 
     if (is.function(predicate)) {
-      okay = predicate.apply(undefined, argv);
-      parameters = parameterize(predicate, argv);
+      result = predicate.apply(undefined, argv);
 
-      if (is.error(okay)) {
+      if (is.error(result)) {
         message = 'Assertion failed. ' +
-            format(okay.message, is.array(okay.argv) ? okay.argv : argv);
+            format(result.message, is.array(result.argv) ? result.argv : argv);
+        result = false;
+      } else if (is.promise(result)) {
+        return result.then(function (value) {
+          if (is.error(value)) {
+            message = 'Assertion failed. ' +
+                format(value.message, is.array(value.argv) ? value.argv : argv);
+            value = false;
+          }
 
-        okay = false;
-      } else {
-        okay = !!okay;
+          produce(argv, predicate, value !== false, message);
+        }, function (reason) {
+          throw reason || new Error('Assertion failed.');
+        });
       }
-    } else {
-      okay = !!predicate;
     }
 
-    if (!okay) {
-      if (is.nil(message)) {
-        var s = ('' + predicate).replace(COLLAPSE_SPACE_RE, ' ');
-        var m = RETURN_RE.exec(s);
-        var infix = (m ? m[1] || m[2] : s);
-
-        var x = 0;
-        for (var name in parameters) {
-          var re = new RegExp('\\b' + name + '\\b', 'g');
-          infix = infix.replace(re, '\${' + x + '}');
-          x++;
-        }
-
-        message = 'Assertion failed. { ' + format(infix, argv) + ' }';
-      }
-
-      throw new Error(message);
-    }
+    produce(argv, predicate, !!result, message);
   }
 
   return prove;

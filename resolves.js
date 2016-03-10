@@ -5,11 +5,36 @@
 'use strict';
 
 var id = 'resolves';
-var dependencies = [];
+var dependencies = ['is'];
 
-function factory() {
-  return function () {
-    throw new Error('Not implemented!');
+function factory(is) {
+  /**
+   * Asserts that `promise` resolves and optionally guarantees that the resolved
+   * value is verified when `predicate()` is invoked with `argv`. The resolved
+   * value is always *prepended* to `argv` (if `argv` is not defined, it will
+   * default to an array with one element for the resolved value).
+   *
+   * @param {Promise} promise - The promise that should resolve.
+   * @param {Array.<*>=} [argv=[value]] - Arguments to apply to `predicate()`.
+   * @param {Function=} [predicate] - A function that asserts something about
+   *     the arguments in `argv`. `predicate()` can expect any number of
+   *     arguments (including none at all) and should return `true` if what it
+   *     asserts is verified; it should return `false` or an `Error` object
+   *     otherwise.
+   */
+  return function resolves(promise, argv, predicate) {
+    if (is.nil(predicate)) {
+      predicate = argv;
+      argv = [];
+    }
+
+    return promise.then(function (value) {
+      if (is.function(predicate)) {
+        return predicate.apply(undefined, [value].concat(argv));
+      }
+
+      return value;
+    });
   };
 }
 

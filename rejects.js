@@ -5,11 +5,79 @@
 'use strict';
 
 var id = 'rejects';
-var dependencies = [];
+var dependencies = ['is', 'match'];
 
-function factory() {
-  return function () {
-    throw new Error('Not implemented!');
+function factory(is, match) {
+  /**
+   * Asserts that `promise` is rejected and optionally guarantees that the
+   * reason is an instance of `constructor` with a message matching `regexp`.
+   *
+   * @param {Promise} promise - The promise that should reject.
+   * @param {Function=} [constructor] - The type of reason to expect.
+   * @param {(RegExp|*)=} [regexp] - The pattern that the reason’s message is
+   *     expected to match.
+   *
+   * @return {Promise<(boolean|Error)>} A promise that resolves with: `true` if
+   *     `promise` rejects with a reason meeting the the optional expectations
+   *     for `constructor` and `regexp`; an `Error` object otherwise.
+   */
+  return function resolves(promise, constructor, regexp) {
+    var n = arguments.length;
+
+    return promise.then(function (value) {
+      var error =
+          new Error('Expected promise to reject, but it resolved as ${0}.');
+      error.argv = [value, promise, constructor, regexp];
+      return error;
+    }, function (reason) {
+      if (n === 1) {
+        return true;
+      } else if (n === 2) {
+        if (!is.function(constructor)) {
+          regexp = constructor;
+          constructor = undefined;
+        }
+      }
+
+      var isInstance = false;
+      if (is.def(constructor)) {
+        isInstance = reason instanceof constructor;
+      } else {
+        isInstance = true;
+      }
+
+      var isMatch = false;
+      if (is.def(regexp)) {
+        isMatch = match(reason.message || reason, regexp);
+      } else {
+        isMatch = true;
+      }
+
+      var failure;
+      if (n === 3) {
+        if (!isInstance || !isMatch) {
+          failure = new Error('Expected promise to reject with reason ' +
+              '${1} ${2}, but caught ${3} ${4}.');
+          failure.argv = [
+            promise,
+            constructor,
+            regexp,
+            reason.constructor,
+            reason.message || reason
+          ];
+        }
+      } else if (isInstance && !isMatch) {
+        failure = new Error('Expected promise to reject with reason ${1}, ' +
+            'but caught ${2}.');
+        failure.argv = [promise, regexp, reason.message || reason];
+      } else if (!isInstance && isMatch) {
+        failure = new Error('Expected promise to reject with reason ${1}, ' +
+            'but caught ${2}.');
+        failure.argv = [promise, constructor, reason.constructor];
+      }
+
+      return failure || true;
+    });
   };
 }
 

@@ -5,9 +5,10 @@
 'use strict';
 
 var id = '';
-var dependencies = ['criteria', '../prove', '../throws'];
+var dependencies =
+    ['criteria', '../prove', '../rejects', '../resolves', '../throws'];
 
-function factory($0, prove, throws) {
+function factory($0, prove, rejects, resolves, throws) {
   /* globals scope, test */
   scope('`prove` Assertion Tests',
   function () {
@@ -59,6 +60,55 @@ function factory($0, prove, throws) {
       }
 
       prove([f, Error, '`f()` should not have been called.'], throws);
+    });
+
+    test('Resolves.',
+    function () {
+      return prove([Promise.resolve()], resolves);
+    });
+
+    test('Rejects with custom type.',
+    function () {
+      return prove([Promise.reject(new TypeError('!')), TypeError], rejects);
+    });
+
+    test('Rejects with custom message.',
+    function () {
+      return prove([Promise.reject(new Error('† Failed.')), '†'], rejects);
+    });
+
+    test('Rejects with custom type and message.',
+    function () {
+      var promise = Promise.reject(new TypeError('† Failed.'));
+      return prove([promise, TypeError, '†'], rejects);
+    });
+
+    test('Rejection with mismatched type fails.',
+    function () {
+      var promise = Promise.reject(new Error('!'));
+      promise = prove([promise, TypeError], rejects);
+
+      return prove([promise, Error, /reject with reason [^"]/], rejects);
+    });
+
+    test('Rejection with mismatched message fails.',
+    function () {
+      var promise = Promise.reject(new Error('!'));
+      promise = prove([promise, '¶'], rejects);
+
+      return prove([promise, Error, 'reject with reason "'], rejects);
+    });
+
+    test('Rejection with mismatched type and message fails.',
+    function () {
+      var promise = Promise.reject(new Error('!'));
+      promise = prove([promise, TypeError, '¶'], rejects);
+
+      promise.then(null, function (reason) {
+        console.log(reason);
+      });
+
+      return prove([promise, Error, /reject with reason [^"]+\s"/], rejects);
     });
   });
 }
