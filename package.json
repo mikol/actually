@@ -8,8 +8,7 @@
   },
   "dependencies": {
     "is": "git+https://github.com/mikol/is.git",
-    "match": "git+https://github.com/mikol/match.git",
-    "slice": "git+https://github.com/mikol/slice.git"
+    "match": "git+https://github.com/mikol/match.git"
   },
   "devDependencies": {},
   "scripts": {

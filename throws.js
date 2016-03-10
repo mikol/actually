@@ -5,9 +5,9 @@
 'use strict';
 
 var id = 'throws';
-var dependencies = ['is', 'match', 'slice'];
+var dependencies = ['is', 'match'];
 
-function factory(is, match, slice) {
+function factory(is, match) {
   /**
    * Asserts that `fn()` throws an exception and optionally guarantees that the
    * exception is an instance of `constructor` with a message matching `regexp`.
@@ -38,7 +38,7 @@ function factory(is, match, slice) {
       return true;
     }
 
-    if (arguments.length === 2) {
+    if (n === 2) {
       if (!is.function(constructor)) {
         regexp = constructor;
         constructor = undefined;
@@ -64,17 +64,20 @@ function factory(is, match, slice) {
       if (!isInstance || !isMatch) {
         failure =
           new Error('Expected ${0} to throw ${1} ${2}, but caught ${3} ${4}.');
-        failure.argv = slice(arguments).concat([
+        failure.argv = [
+          fn,
+          constructor,
+          regexp,
           error.constructor,
           error.message || error
-        ]);
+        ];
       }
     } else if (isInstance && !isMatch) {
       failure = new Error('Expected ${0} to throw ${1}, but caught ${2}.');
-      failure.argv = slice(arguments).concat([error.message || error]);
+      failure.argv = [fn, constructor, regexp, error.message || error];
     } else if (!isInstance && isMatch) {
       failure = new Error('Expected ${0} to throw ${1}, but caught ${2}.');
-      failure.argv = slice(arguments).concat([error.constructor]);
+      failure.argv = [fn, constructor, regexp, error.constructor];
     }
 
     return failure || true;
