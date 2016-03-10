@@ -102,7 +102,7 @@ function factory(is) {
    * values.
    *
    * Richer error messages can be crafted by returning an `Error` object from
-   * `predicate()`. The object’s `message` property is aassumed to be string
+   * `predicate()`. The object’s `message` property is assumed to be string
    * optionally formatted with `${n}` expressions (where `n` is the index of
    * the corresponding element in `argv`).
    *
