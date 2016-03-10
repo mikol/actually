@@ -98,17 +98,17 @@ function factory(is) {
    *
    * If `predicate()` returns `false`, then an error will be thrown whose
    * message is inferred by coercing `predicate` to a string and replacing
-   * occurences of any parameters therein with the corresponding `argv`
+   * occurrences of any parameters therein with the corresponding `argv`
    * values.
    *
-   * Richer error messages can be crafted if `predicate()` returns an `Error`
-   * object whose `message` property is a string optionally formatted with
-   * `${n}` expressions where `n` is the index of the corresponding element in
-   * `argv`.
+   * Richer error messages can be crafted by returning an `Error` object from
+   * `predicate()`. The object’s `message` property is aassumed to be string
+   * optionally formatted with `${n}` expressions (where `n` is the index of
+   * the corresponding element in `argv`).
    *
    * If `predicate()` returns an `Error` object that includes an `argv`
    * property, this property will be used in place of the `argv` parameter
-   * specified above.
+   * passed to `prove()`.
    *
    * @example
    * // Throws an exception unless the predicate `are.equal` holds true given
