@@ -104,7 +104,7 @@ function factory(is) {
 
   /**
    * Throws an exception if invoking `predicate()` with the arguments listed in
-   * `argv` returns either `false` or an `Error` object.
+   * `argv` returns `false` or throws an exception.
    *
    * If `predicate()` returns `false`, then an error will be thrown whose
    * message is inferred by coercing `predicate` to a string and replacing
