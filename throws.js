@@ -30,7 +30,7 @@ function factory(is, match) {
     }
 
     if (is.nil(error)) {
-      return new Error('Expected ${0} to throw an exception.');
+      throw new Error('Expected ${0} to throw an exception.');
     }
 
     var n = arguments.length;
@@ -71,16 +71,19 @@ function factory(is, match) {
           error.constructor,
           error.message || error
         ];
+        throw failure;
       }
     } else if (isInstance && !isMatch) {
       failure = new Error('Expected ${0} to throw ${1}, but caught ${2}.');
-      failure.argv = [fn, constructor, regexp, error.message || error];
+      failure.argv = [fn, regexp, error.message || error];
+      throw failure;
     } else if (!isInstance && isMatch) {
       failure = new Error('Expected ${0} to throw ${1}, but caught ${2}.');
-      failure.argv = [fn, constructor, regexp, error.constructor];
+      failure.argv = [fn, constructor, error.constructor];
+      throw failure;
     }
 
-    return failure || true;
+    return true;
   };
 }
 

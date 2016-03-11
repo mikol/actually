@@ -17,10 +17,12 @@ function factory(is) {
    * @param {Promise} promise - The promise that should resolve.
    * @param {Array.<*>=} [argv=[value]] - Arguments to apply to `predicate()`.
    * @param {Function=} [predicate] - A function that asserts something about
-   *     the arguments in `argv`. `predicate()` can expect any number of
-   *     arguments (including none at all) and should return `true` if what it
-   *     asserts is verified; it should return `false` or an `Error` object
-   *     otherwise.
+   *     `promise`’s resolved value and the arguments in `argv`. `predicate()`
+   *     can expect any number of arguments (including none at all) and should
+   *     return `true` if what it asserts is verified; it should return `false`
+   *     or throw an exception otherwise.
+   *
+   * @throws {Error} If `predicate()` returns `false` or throws an exception.
    */
   return function resolves(promise, argv, predicate) {
     if (is.nil(predicate)) {
@@ -33,7 +35,7 @@ function factory(is) {
         return predicate.apply(undefined, [value].concat(argv));
       }
 
-      return value;
+      return true;
     });
   };
 }

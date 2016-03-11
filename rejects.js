@@ -28,7 +28,7 @@ function factory(is, match) {
       var error =
           new Error('Expected promise to reject, but it resolved as ${0}.');
       error.argv = [value, promise, constructor, regexp];
-      return error;
+      throw error;
     }, function (reason) {
       if (n === 1) {
         return true;
@@ -65,18 +65,21 @@ function factory(is, match) {
             reason.constructor,
             reason.message || reason
           ];
+          throw failure;
         }
       } else if (isInstance && !isMatch) {
         failure = new Error('Expected promise to reject with reason ${1}, ' +
             'but caught ${2}.');
         failure.argv = [promise, regexp, reason.message || reason];
+        throw failure;
       } else if (!isInstance && isMatch) {
         failure = new Error('Expected promise to reject with reason ${1}, ' +
             'but caught ${2}.');
         failure.argv = [promise, constructor, reason.constructor];
+        throw failure;
       }
 
-      return failure || true;
+      return true;
     });
   };
 }
