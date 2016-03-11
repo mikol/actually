@@ -23,6 +23,9 @@ function factory(is) {
     return string;
   }
 
+  /**
+   * @private
+   */
   function isArrowFunction(string) {
     var arrowIndex = ~string.indexOf('=>'); // (0, -1, -2, ..., -n)
     var functionIndex = ~string.indexOf('function');
@@ -30,18 +33,11 @@ function factory(is) {
     return arrowIndex && (!functionIndex || arrowIndex > functionIndex);
   }
 
+  /**
+   * @private
+   */
   function isNamedFunction(string) {
     return /^function\s[^\(\s]+\s?\(.*?\)\s?\{/.test(string);
-  }
-
-  function stringify(value) {
-    if (is.string(value)) {
-      return "'" + value + "'";
-    } else if (is.function(value)) {
-      return (value.name ? value.name + '()' : 'function ()');
-    }
-
-    return value;
   }
 
   /**
@@ -91,6 +87,19 @@ function factory(is) {
 
       throw new Error(message);
     }
+  }
+
+  /**
+   * @private
+   */
+  function stringify(value) {
+    if (is.string(value)) {
+      return "'" + value + "'";
+    } else if (is.function(value)) {
+      return (value.name ? value.name + '()' : 'function ()');
+    }
+
+    return value;
   }
 
   /**
@@ -147,12 +156,14 @@ function factory(is) {
    * });
    *
    * @example
-   * // Manually fail using the `Error` constructor as a predicate. Throws:
-   * // Error('Assertion failed. `callback()` should not have been called.');
-   * prove(['`callback()` should not have been called.'], Error);
+   * // Manually fails.
+   * // Error: Assertion failed. `callback()` should not have been called.
+   * prove(function () {
+   *   throw new Error('`callback()` should not have been called.');
+   * });
    *
    * @param {Array.<*>} [argv=[]] - Arguments to apply to `predicate()`.
-   * @param {function(...*): (boolean|Error)} predicate - A function that
+   * @param {function(...*): boolean} predicate - A function that
    *     asserts something about the arguments in `argv`. `predicate()` can
    *     expect any number of arguments (including none at all) and should
    *     return `true` if what it asserts is verified; it should return `false`

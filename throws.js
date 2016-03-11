@@ -17,9 +17,12 @@ function factory(is, match) {
    * @param {(RegExp|*)=} [regexp] - The pattern that the exception’s message is
    *     expected to match.
    *
-   * @return {!(boolean|Error)} `true` if `fn()` throws an exception meeting the
-   *     the optional expectations for `constructor` and `regexp`; an `Error`
-   *     object otherwise.
+   * @return {!boolean} `true` if `fn()` throws an exception meeting the
+   *     the optional expectations for `constructor` and `regexp`.
+   *
+   * @throws {Error} If `fn()` doesn’t throw an exception or the exception it
+   *     the does throw doesn’t meet the optional expectations for `constructor`
+   *     and `regexp`.
    */
   return function throws(fn, constructor, regexp) {
     var error;

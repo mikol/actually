@@ -17,9 +17,9 @@ function factory(is, match) {
    * @param {(RegExp|*)=} [regexp] - The pattern that the reason’s message is
    *     expected to match.
    *
-   * @return {Promise<(boolean|Error)>} A promise that resolves with: `true` if
+   * @return {Promise<boolean>} A promise that resolves with: `true` if
    *     `promise` rejects with a reason meeting the the optional expectations
-   *     for `constructor` and `regexp`; an `Error` object otherwise.
+   *     for `constructor` and `regexp`; otherwise the promise will be rejected.
    */
   return function resolves(promise, constructor, regexp) {
     var n = arguments.length;

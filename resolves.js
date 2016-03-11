@@ -22,7 +22,9 @@ function factory(is) {
    *     return `true` if what it asserts is verified; it should return `false`
    *     or throw an exception otherwise.
    *
-   * @throws {Error} If `predicate()` returns `false` or throws an exception.
+   * @return {Promise<boolean>} A promise that resolves to `true` if `promise`
+   *     resolves and, if the optional `predicate()` returns `true`; otherwise
+   *     it resolves to `false` or rejects.
    */
   return function resolves(promise, argv, predicate) {
     if (is.nil(predicate)) {
