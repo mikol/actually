@@ -111,7 +111,7 @@ function factory(is) {
    * occurrences of any parameters therein with the corresponding `argv`
    * values.
    *
-   * Richer error messages can be crafted by returning an `Error` object from
+   * Richer error messages can be crafted by throwing an exception from
    * `predicate()`. The object’s `message` property is assumed to be string
    * optionally formatted with `${n}` expressions (where `n` is the index of
    * the corresponding element in `argv`).
