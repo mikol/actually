@@ -5,24 +5,36 @@
 'use strict';
 
 var id = 'rejects';
-var dependencies = ['is', 'match'];
+var dependencies = ['is', 'matches'];
 
-function factory(is, match) {
+function factory(is, matches) {
   /**
    * Asserts that `promise` is rejected and optionally guarantees that the
    * reason is an instance of `constructor` with a message matching `regexp`.
    *
-   * @param {Promise} promise - The promise that should reject.
    * @param {Function=} [constructor] - The type of reason to expect.
    * @param {(RegExp|*)=} [regexp] - The pattern that the reason’s message is
    *     expected to match.
+   * @param {Promise} promise - The promise that should reject.
    *
-   * @return {Promise<boolean>} A promise that resolves with: `true` if
-   *     `promise` rejects with a reason meeting the the optional expectations
-   *     for `constructor` and `regexp`; otherwise the promise will be rejected.
+   * @return {Promise<boolean>} A promise that resolves to `true` if `promise`
+   *     rejects with a reason meeting the the optional expectations for
+   *     `constructor` and `regexp`; otherwise the promise will be rejected.
    */
-  return function resolves(promise, constructor, regexp) {
+  return function rejects(constructor, regexp, promise) {
     var n = arguments.length;
+    if (n === 1) {
+      promise = constructor;
+      constructor = undefined;
+    } else if (n === 2) {
+      promise = regexp;
+      if (is.function(constructor)) {
+        regexp = undefined;
+      } else {
+        regexp = constructor;
+        constructor = undefined;
+      }
+    }
 
     return promise.then(function (value) {
       var error =
@@ -32,11 +44,6 @@ function factory(is, match) {
     }, function (reason) {
       if (n === 1) {
         return true;
-      } else if (n === 2) {
-        if (!is.function(constructor)) {
-          regexp = constructor;
-          constructor = undefined;
-        }
       }
 
       var isInstance = false;
@@ -48,7 +55,7 @@ function factory(is, match) {
 
       var isMatch = false;
       if (is.def(regexp)) {
-        isMatch = match(reason.message || reason, regexp);
+        isMatch = matches(regexp, reason.message || reason);
       } else {
         isMatch = true;
       }

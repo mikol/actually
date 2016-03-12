@@ -5,19 +5,26 @@
 'use strict';
 
 var id = 'prove';
-var dependencies = ['is'];
+var dependencies = ['is', 'slice'];
 
-function factory(is) {
+function factory(is, slice) {
+  var ARROW_FUNCTION_PARAMETERS_RE = /^\(?(.*?)\)? ?=>/;
+  var ARROW_FUNCTION_REPLACE_RE = /^().*?(\s?=>.*)$/;
+  var NAMED_FUNCTION_RE = /^function ([^\( ]+\s?\(.*?\))/;
+  var NAMED_FUNCTION_PARAMETERS_RE = /^[^\( ]+\((.*?)\);$/;
+  var NAMED_FUNCTION_REPLACE_RE = /^([^\( ]+)\(.*?\)(;)$/;
+  var FUNCTION_PARAMETERS_RE = /^function \((.*?)\)/;
+  var FUNCTION_REPLACE_RE = /^(function )\(.*?\)(.*)$/;
+  var PLACEHOLDER_RE = /([^\\])?\$\{(\d+?)\}/g;
+
   /**
    * @private
    */
   function format(string, argv) {
     if (is.array(argv)) {
-      argv = stringify(argv);
-      return ('' + string).replace(/([^\\])?\$\{(\d+?)\}/g,
-        function (m, $1, $2) {
-          return (is.string($1) ? $1 : '') + stringify(argv[$2]);
-        });
+      return ('' + string).replace(PLACEHOLDER_RE, function (m, $1, $2) {
+        return (is.string($1) ? $1 : '') + stringify(argv[$2]);
+      });
     }
 
     return string;
@@ -37,7 +44,7 @@ function factory(is) {
    * @private
    */
   function isNamedFunction(string) {
-    return /^function\s[^\(\s]+\s?\(.*?\)\s?\{/.test(string);
+    return NAMED_FUNCTION_RE.test(string);
   }
 
   /**
@@ -53,15 +60,15 @@ function factory(is) {
         var replaceRegExp;
 
         if (isArrowFunction(infix)) {
-          matchedParameters = /^\(?(.*?)\)? ?=>/.exec(infix);
-          replaceRegExp = /^().*?(\s?=>.*)$/;
+          matchedParameters = ARROW_FUNCTION_PARAMETERS_RE.exec(infix);
+          replaceRegExp = ARROW_FUNCTION_REPLACE_RE;
         } else if (isNamedFunction(infix)) {
-          infix = /^function ([^\( ]+\s?\(.*?\))/.exec(infix)[1] + ';';
-          matchedParameters = /^[^\( ]+\((.*?)\);$/.exec(infix);
-          replaceRegExp = /^([^\( ]+)\(.*?\)(;)$/;
+          infix = NAMED_FUNCTION_RE.exec(infix)[1] + ';';
+          matchedParameters = NAMED_FUNCTION_PARAMETERS_RE.exec(infix);
+          replaceRegExp = NAMED_FUNCTION_REPLACE_RE;
         } else {
-          matchedParameters = /^function \((.*?)\)/.exec(infix);
-          replaceRegExp = /^(function )\(.*?\)(.*)$/;
+          matchedParameters = FUNCTION_PARAMETERS_RE.exec(infix);
+          replaceRegExp = FUNCTION_REPLACE_RE;
         }
 
         parametersString = matchedParameters && matchedParameters[1] &&
@@ -122,30 +129,30 @@ function factory(is) {
    *
    * @example
    * // Throws an exception unless the predicate `are.equal` holds true given
-   * // the arguments `[actual, expected]`.
-   * prove([actual, expected], are.equal);
+   * // the arguments `expected` and `actual`.
+   * prove(are.equal, expected, actual);
    *
    * @example
    * // Error: Assertion failed. function (a = 'true', b = 'false') { return a
    * // === b; }
-   * prove([true, false], function (a, b) {
+   * prove(function (a, b) {
    *   return a === b;
-   * });
+   * }, true, false);
    *
    * @example
    * // Error: Assertion failed. `true` does not equal `false`.
-   * prove([true, false], function (a, b) {
+   * prove(function (a, b) {
    *   if (a === b) {
    *     return true;
    *   }
    *
    *   throw new Error('${0} does not equal ${1}.');
-   * });
+   * }, true, false);
    *
    * @example
    * // Error: Assertion failed. `true` did not equal `false` at "Wed Mar 09
    * // 2016 15:08:09 GMT-0800 (PST)".
-   * prove([true, false], function eq(a, b) {
+   * prove(function eq(a, b) {
    *   if (a === b) {
    *     return true;
    *   }
@@ -153,7 +160,7 @@ function factory(is) {
    *   var error = new Error('${0} did not equal ${1} at ${2}.');
    *   error.argv = [a, b, new Date()];
    *   throw error;
-   * });
+   * }, true, false);
    *
    * @example
    * // Manually fails.
@@ -162,7 +169,7 @@ function factory(is) {
    *   throw new Error('`callback()` should not have been called.');
    * });
    *
-   * @param {Array.<*>} [argv=[]] - Arguments to apply to `predicate()`.
+   * @param {...*} [argv=[]] - Arguments to apply to `predicate()`.
    * @param {function(...*): boolean} predicate - A function that
    *     asserts something about the arguments in `argv`. `predicate()` can
    *     expect any number of arguments (including none at all) and should
@@ -171,11 +178,8 @@ function factory(is) {
    *
    * @throws {Error} If `predicate()` returns `false` or throws an exception.
    */
-  function prove(argv, predicate) {
-    if (is.nil(predicate)) {
-      predicate = argv;
-      argv = [];
-    }
+  function prove(predicate) {
+    var argv = slice(arguments, 1);
 
     var message;
     var result = false;
@@ -198,6 +202,7 @@ function factory(is) {
       });
     } else {
       produce(argv, predicate, !!result, message);
+      return result;
     }
   }
 

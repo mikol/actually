@@ -5,26 +5,39 @@
 'use strict';
 
 var id = 'throws';
-var dependencies = ['is', 'match'];
+var dependencies = ['is', 'matches'];
 
-function factory(is, match) {
+function factory(is, matches) {
   /**
    * Asserts that `fn()` throws an exception and optionally guarantees that the
    * exception is an instance of `constructor` with a message matching `regexp`.
    *
-   * @param {Function} fn - The function to invoke.
    * @param {Function=} [constructor] - The type of exception to expect.
    * @param {(RegExp|*)=} [regexp] - The pattern that the exception’s message is
    *     expected to match.
+   * @param {Function} fn - The function to invoke.
    *
    * @return {!boolean} `true` if `fn()` throws an exception meeting the
    *     the optional expectations for `constructor` and `regexp`.
    *
-   * @throws {Error} If `fn()` doesn’t throw an exception or the exception it
-   *     the does throw doesn’t meet the optional expectations for `constructor`
-   *     and `regexp`.
+   * @throws {Error} If `fn()` doesn’t throw an exception or the exception
+   *     thrown doesn’t meet the expectations for `constructor` and `regexp`.
    */
-  return function throws(fn, constructor, regexp) {
+  return function throws(constructor, regexp, fn) {
+    var n = arguments.length;
+    if (n === 1) {
+      fn = constructor;
+      constructor = undefined;
+    } else if (n === 2) {
+      fn = regexp;
+      if (is.function(constructor)) {
+        regexp = undefined;
+      } else {
+        regexp = constructor;
+        constructor = undefined;
+      }
+    }
+
     var error;
     try {
       fn();
@@ -36,16 +49,8 @@ function factory(is, match) {
       throw new Error('Expected ${0} to throw an exception.');
     }
 
-    var n = arguments.length;
     if (n === 1) {
       return true;
-    }
-
-    if (n === 2) {
-      if (!is.function(constructor)) {
-        regexp = constructor;
-        constructor = undefined;
-      }
     }
 
     var isInstance = false;
@@ -57,7 +62,7 @@ function factory(is, match) {
 
     var isMatch = false;
     if (is.def(regexp)) {
-      isMatch = match(error.message || error, regexp);
+      isMatch = matches(regexp, error.message || error);
     } else {
       isMatch = true;
     }
