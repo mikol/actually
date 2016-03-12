@@ -8,163 +8,163 @@ var id = '';
 var dependencies = [
   'criteria',
   'matches',
-  '../prove',
+  '../actually',
   '../rejects',
   '../resolves',
   '../throws'
 ];
 
-function factory($0, matches, prove, rejects, resolves, throws) {
+function factory($0, matches, actually, rejects, resolves, throws) {
   /* globals scope, test */
-  scope('`prove` Assertion Tests',
+  scope('`actually` Assertion Tests',
   function () {
     test('Passes.', function () {
-      prove(function (a, b) {
+      actually(function (a, b) {
         return a === b;
       }, true, true);
     });
 
     test('Fails.', function () {
       function f() {
-        prove(function (a, b) {
+        actually(function (a, b) {
           return a === b;
         }, true, false);
       }
 
-      prove(throws, f);
+      actually(throws, f);
     });
 
     test('Generic arrow predicate fails.', function () {
       function f() {
-        prove(() => false);
+        actually(() => false);
       }
 
-      prove(throws, '() => false', f);
+      actually(throws, '() => false', f);
     });
 
     test('Generic arrow predicate with argument fails.', function () {
       function f() {
-        prove(() => false, 'a');
+        actually(() => false, 'a');
       }
 
-      prove(throws, "('a') => false", f);
+      actually(throws, "('a') => false", f);
     });
 
     test('Generic arrow predicate with arguments fails.', function () {
       function f() {
-        prove(() => false, 'a', 'b');
+        actually(() => false, 'a', 'b');
       }
 
-      prove(throws, "('a', 'b') => false", f);
+      actually(throws, "('a', 'b') => false", f);
     });
 
     test('Generic arrow predicate with parameter fails.', function () {
       function f() {
-        prove((a) => a !== a, 'a');
+        actually((a) => a !== a, 'a');
       }
 
-      prove(throws, "(a = 'a') => a !== a", f);
+      actually(throws, "(a = 'a') => a !== a", f);
     });
 
     test('Generic arrow predicate with some parameters fails.', function () {
       function f() {
-        prove((a) => a !== a, 'a', 'b');
+        actually((a) => a !== a, 'a', 'b');
       }
 
-      prove(throws, "(a = 'a', 'b') => a !== a", f);
+      actually(throws, "(a = 'a', 'b') => a !== a", f);
     });
 
     test('Generic arrow predicate with parameters fails.', function () {
       function f() {
-        prove((a, b) => a === b, 'a', 'b');
+        actually((a, b) => a === b, 'a', 'b');
       }
 
-      prove(throws, "(a = 'a', b = 'b') => a === b", f);
+      actually(throws, "(a = 'a', b = 'b') => a === b", f);
     });
 
     test('Generic predicate fails.', function () {
       function f() {
-        prove(function () {
+        actually(function () {
           return false;
         });
       }
 
-      prove(throws, 'function () { return false; }', f);
+      actually(throws, 'function () { return false; }', f);
     });
 
     test('Generic predicate with arguments fails.', function () {
       function f() {
-        prove(function () {
+        actually(function () {
           return false;
         }, 'a', 'b');
       }
 
-      prove(throws, "function ('a', 'b') { return false; }", f);
+      actually(throws, "function ('a', 'b') { return false; }", f);
     });
 
     test('Generic predicate with some parameters fails.', function () {
       function f() {
-        prove(function (a) {
+        actually(function (a) {
           return a !== a;
         }, 'a', 'b');
       }
 
-      prove(throws, "function (a = 'a', 'b') { return a !== a; }", f);
+      actually(throws, "function (a = 'a', 'b') { return a !== a; }", f);
     });
 
     test('Generic predicate with parameters fails.', function () {
       function f() {
-        prove(function (a, b) {
+        actually(function (a, b) {
           return a === b;
         }, 'a', 'b');
       }
 
-      prove(throws, "function (a = 'a', b = 'b') { return a === b; }", f);
+      actually(throws, "function (a = 'a', b = 'b') { return a === b; }", f);
     });
 
     test('Generic named predicate fails.', function () {
       function f() {
-        prove(function predicate() {
+        actually(function predicate() {
           return false;
         });
       }
 
-      prove(throws, 'predicate();', f);
+      actually(throws, 'predicate();', f);
     });
 
     test('Generic named predicate with arguments fails.', function () {
       function f() {
-        prove(function predicate() {
+        actually(function predicate() {
           return false;
         }, 'a', 'b');
       }
 
-      prove(throws, "predicate('a', 'b');", f);
+      actually(throws, "predicate('a', 'b');", f);
     });
 
     test('Generic named predicate with some parameters fails.', function () {
       function f() {
-        prove(function predicate(a) {
+        actually(function predicate(a) {
           return a !== a;
         }, 'a', 'b');
       }
 
-      prove(throws, "predicate(a = 'a', 'b');", f);
+      actually(throws, "predicate(a = 'a', 'b');", f);
     });
 
     test('Generic named predicate with parameters fails.', function () {
       function f() {
-        prove(function predicate(a, b) {
+        actually(function predicate(a, b) {
           return a === b;
         }, 'a', 'b');
       }
 
-      prove(throws, "predicate(a = 'a', b = 'b');", f);
+      actually(throws, "predicate(a = 'a', b = 'b');", f);
     });
 
     test('Fails with custom message.', function () {
       function f() {
-        prove(function (a, b) {
+        actually(function (a, b) {
           if (a === b) {
             return true;
           }
@@ -173,12 +173,12 @@ function factory($0, matches, prove, rejects, resolves, throws) {
         }, true, false);
       }
 
-      prove(throws, Error, /does not equal/, f);
+      actually(throws, Error, /does not equal/, f);
     });
 
     test('Fails with custom arguments.', function () {
       function f() {
-        prove(function (a, b) {
+        actually(function (a, b) {
           if (a === b) {
             return true;
           }
@@ -189,7 +189,7 @@ function factory($0, matches, prove, rejects, resolves, throws) {
         }, true, false);
       }
 
-      prove(throws, Error, /did not equal \S+ at/, f);
+      actually(throws, Error, /did not equal \S+ at/, f);
     });
 
     test('Manually fails.', function () {
@@ -197,64 +197,64 @@ function factory($0, matches, prove, rejects, resolves, throws) {
         throw new Error('`f()` should not have been called.');
       }
 
-      prove(throws, Error, '`f()` should not have been called.', f);
+      actually(throws, Error, '`f()` should not have been called.', f);
     });
 
     test('Resolves.',
     function () {
-      return prove(resolves, Promise.resolve());
+      return actually(resolves, Promise.resolve());
     });
 
     test('Resolves with predicate.',
     function () {
-      return prove(resolves, function (a) {
+      return actually(resolves, function (a) {
         return a === 'resolution';
       }, Promise.resolve('resolution'));
     });
 
     test('Resolves with arguments and predicate.',
     function () {
-      return prove(resolves, matches, /^qwerty$/, Promise.resolve('qwerty'));
+      return actually(resolves, matches, /^qwerty$/, Promise.resolve('qwerty'));
     });
 
     test('Rejects with custom type.',
     function () {
-      return prove(rejects, TypeError, Promise.reject(new TypeError('!')));
+      return actually(rejects, TypeError, Promise.reject(new TypeError('!')));
     });
 
     test('Rejects with custom message.',
     function () {
-      return prove(rejects, '†', Promise.reject(new Error('† Failed.')));
+      return actually(rejects, '†', Promise.reject(new Error('† Failed.')));
     });
 
     test('Rejects with custom type and message.',
     function () {
       var promise = Promise.reject(new TypeError('† Failed.'));
-      return prove(rejects, TypeError, '†', promise);
+      return actually(rejects, TypeError, '†', promise);
     });
 
     test('Rejection with mismatched type fails.',
     function () {
       var promise = Promise.reject(new Error('!'));
-      promise = prove(rejects, TypeError, promise);
+      promise = actually(rejects, TypeError, promise);
 
-      return prove(rejects, Error, /reject with reason [^"]/, promise);
+      return actually(rejects, Error, /reject with reason [^"]/, promise);
     });
 
     test('Rejection with mismatched message fails.',
     function () {
       var promise = Promise.reject(new Error('!'));
-      promise = prove(rejects, '¶', promise);
+      promise = actually(rejects, '¶', promise);
 
-      return prove(rejects, "reject with reason '", promise);
+      return actually(rejects, "reject with reason '", promise);
     });
 
     test('Rejection with mismatched type and message fails.',
     function () {
       var promise = Promise.reject(new Error('!'));
-      promise = prove(rejects, TypeError, '¶', promise);
+      promise = actually(rejects, TypeError, '¶', promise);
 
-      return prove(rejects, Error, /reject with reason [^']+\s'/, promise);
+      return actually(rejects, Error, /reject with reason [^']+\s'/, promise);
     });
   });
 }

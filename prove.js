@@ -4,7 +4,7 @@
 
 'use strict';
 
-var id = 'prove';
+var id = 'actually';
 var dependencies = ['is', 'slice'];
 
 function factory(is, slice) {
@@ -125,23 +125,23 @@ function factory(is, slice) {
    *
    * If `predicate()` returns an `Error` object that includes an `argv`
    * property, this property will be used in place of the `argv` parameter
-   * passed to `prove()`.
+   * passed to `actually()`.
    *
    * @example
    * // Throws an exception unless the predicate `are.equal` holds true given
    * // the arguments `expected` and `actual`.
-   * prove(are.equal, expected, actual);
+   * actually(are.equal, expected, actual);
    *
    * @example
    * // Error: Assertion failed. function (a = 'true', b = 'false') { return a
    * // === b; }
-   * prove(function (a, b) {
+   * actually(function (a, b) {
    *   return a === b;
    * }, true, false);
    *
    * @example
    * // Error: Assertion failed. `true` does not equal `false`.
-   * prove(function (a, b) {
+   * actually(function (a, b) {
    *   if (a === b) {
    *     return true;
    *   }
@@ -152,7 +152,7 @@ function factory(is, slice) {
    * @example
    * // Error: Assertion failed. `true` did not equal `false` at "Wed Mar 09
    * // 2016 15:08:09 GMT-0800 (PST)".
-   * prove(function eq(a, b) {
+   * actually(function eq(a, b) {
    *   if (a === b) {
    *     return true;
    *   }
@@ -165,7 +165,7 @@ function factory(is, slice) {
    * @example
    * // Manually fails.
    * // Error: Assertion failed. `callback()` should not have been called.
-   * prove(function () {
+   * actually(function () {
    *   throw new Error('`callback()` should not have been called.');
    * });
    *
@@ -178,7 +178,7 @@ function factory(is, slice) {
    *
    * @throws {Error} If `predicate()` returns `false` or throws an exception.
    */
-  function prove(predicate) {
+  function actually(predicate) {
     var argv = slice(arguments, 1);
 
     var message;
@@ -206,7 +206,7 @@ function factory(is, slice) {
     }
   }
 
-  return prove;
+  return actually;
 }
 
 // -----------------------------------------------------------------------------

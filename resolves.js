@@ -5,9 +5,9 @@
 'use strict';
 
 var id = 'resolves';
-var dependencies = ['is', './prove', 'slice'];
+var dependencies = ['is', './actually', 'slice'];
 
-function factory(is, prove, slice) {
+function factory(is, actually, slice) {
   /**
    * Asserts that `promise` resolves and optionally guarantees that the resolved
    * value is verified when `predicate()` is invoked with `argv`. The resolved
@@ -33,7 +33,7 @@ function factory(is, prove, slice) {
 
     return promise.then(function (value) {
       if (is.function(predicate)) {
-        return prove.apply(undefined, [predicate].concat(argv, value));
+        return actually.apply(undefined, [predicate].concat(argv, value));
       }
 
       return true;

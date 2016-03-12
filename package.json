@@ -1,8 +1,8 @@
 {
-  "name": "prove",
+  "name": "actually",
   "version": "0.0.3",
   "description": "A composable assertion library.",
-  "main": "prove.js",
+  "main": "actually.js",
   "directories": {
     "test": "test"
   },
@@ -19,7 +19,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mikol/prove.git"
+    "url": "git+https://github.com/mikol/actually.git"
   },
   "keywords": [
     "assert"
@@ -31,7 +31,7 @@
   },
   "license": "CC-BY-SA-4.0",
   "bugs": {
-    "url": "https://github.com/mikol/prove/issues"
+    "url": "https://github.com/mikol/actually/issues"
   },
-  "homepage": "https://github.com/mikol/prove#readme"
+  "homepage": "https://github.com/mikol/actually#readme"
 }

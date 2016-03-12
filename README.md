@@ -1,2 +1,2 @@
-# prove
+# actually
 A composable assertion library.
