@@ -184,10 +184,14 @@ function factory(is, slice) {
     var message;
     var result = false;
 
-    try {
-      result = predicate.apply(undefined, argv);
-    } catch (e) {
-      message = format(e.stack, is.array(e.argv) ? e.argv : argv);
+    if (is.function(predicate)) {
+      try {
+        result = predicate.apply(undefined, argv);
+      } catch (e) {
+        message = format(e.stack, is.array(e.argv) ? e.argv : argv);
+      }
+    } else {
+      result = predicate;
     }
 
     if (is.promise(result)) {

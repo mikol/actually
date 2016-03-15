@@ -18,13 +18,25 @@ function factory($0, matches, actually, rejects, resolves, throws) {
   /* globals scope, test */
   scope('`actually` Assertion Tests',
   function () {
-    test('Passes.', function () {
+    test('Boolean predicate passes.', function () {
+      actually(true);
+    });
+
+    test('Boolean predicate fails.', function () {
+      function f() {
+        return actually(false);
+      }
+
+      actually(throws, f);
+    });
+
+    test('Function predicate passes.', function () {
       actually(function (a, b) {
         return a === b;
       }, true, true);
     });
 
-    test('Fails.', function () {
+    test('Function predicate fails.', function () {
       function f() {
         actually(function (a, b) {
           return a === b;
