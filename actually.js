@@ -88,11 +88,11 @@ function factory(is, slice) {
           pairs.push(stringify(argv[x]));
         }
 
-        message = 'Assertion failed. ' +
+        message =
             infix.replace(replaceRegExp, '$1(' + pairs.join(', ') + ')$2');
       }
 
-      throw new Error(message);
+      throw new Error('Assertion failed. ' + message);
     }
   }
 
@@ -187,16 +187,15 @@ function factory(is, slice) {
     try {
       result = predicate.apply(undefined, argv);
     } catch (e) {
-      message = 'Assertion failed. ' +
-          format(e.message, is.array(e.argv) ? e.argv : argv);
+      message = format(e.stack, is.array(e.argv) ? e.argv : argv);
     }
 
     if (is.promise(result)) {
       return result.then(function (value) {
         produce(argv, predicate, !!value, message);
       }, function (reason) {
-        message = 'Assertion failed. ' +
-            format(reason.message, is.array(reason.argv) ? reason.argv : argv);
+        message =
+            format(reason.stack, is.array(reason.argv) ? reason.argv : argv);
 
         produce(argv, predicate, false, message);
       });

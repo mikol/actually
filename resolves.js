@@ -30,13 +30,26 @@ function factory(is, actually, slice) {
     var argv = slice(arguments);
     var promise = argv.pop();
     var predicate = argv.shift();
+    var stack = new Error('...').stack.replace(/^Error: .../, '\n    --');
 
     return promise.then(function (value) {
       if (is.function(predicate)) {
-        return actually.apply(undefined, [predicate].concat(argv, value));
+        try {
+          return actually.apply(undefined, [predicate].concat(argv, value));
+        } catch (e) {
+          e.stack += stack;
+          throw e;
+        }
       }
 
       return true;
+    }, function (reason) {
+      if (!is.error(reason)) {
+        reason = new Error(reason);
+      }
+
+      reason.stack += stack;
+      throw reason;
     });
   };
 }

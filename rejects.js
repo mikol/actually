@@ -22,6 +22,8 @@ function factory(is, matches) {
    *     `constructor` and `regexp`; otherwise the promise will be rejected.
    */
   return function rejects(constructor, regexp, promise) {
+    var stack = new Error('...').stack.replace(/^Error: .../, '\n    --');
+
     var n = arguments.length;
     if (n === 1) {
       promise = constructor;
@@ -40,6 +42,7 @@ function factory(is, matches) {
       var error =
           new Error('Expected promise to reject, but it resolved as ${0}.');
       error.argv = [value, promise, constructor, regexp];
+      error.stack += stack;
       throw error;
     }, function (reason) {
       if (n === 1) {
@@ -72,17 +75,20 @@ function factory(is, matches) {
             reason.constructor,
             reason.message || reason
           ];
+          failure.stack += stack;
           throw failure;
         }
       } else if (isInstance && !isMatch) {
         failure = new Error('Expected promise to reject with reason ${1}, ' +
             'but caught ${2}.');
         failure.argv = [promise, regexp, reason.message || reason];
+        failure.stack += stack;
         throw failure;
       } else if (!isInstance && isMatch) {
         failure = new Error('Expected promise to reject with reason ${1}, ' +
             'but caught ${2}.');
         failure.argv = [promise, constructor, reason.constructor];
+        failure.stack += stack;
         throw failure;
       }
 
