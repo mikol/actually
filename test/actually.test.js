@@ -36,6 +36,17 @@ function factory($0, matches, actually, rejects, resolves, throws) {
       }, true, true);
     });
 
+    test('Function is reported correctly when it does not throw as expected.',
+    function () {
+      function callee(a) { return a; }
+
+      function caller() {
+        actually(throws, callee);
+      }
+
+      actually(throws, 'Expected callee() to throw an exception.', caller);
+    });
+
     test('Function predicate fails.', function () {
       function f() {
         actually(function (a, b) {

@@ -46,7 +46,9 @@ function factory(is, matches) {
     }
 
     if (is.nil(error)) {
-      throw new Error('Expected ${0} to throw an exception.');
+      error = new Error('Expected ${0} to throw an exception.');
+      error.argv = [fn];
+      throw error;
     }
 
     if (n === 1) {
